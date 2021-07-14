@@ -1,7 +1,7 @@
 # How many ways can a word be misspelled if only upto 2 deletion, 2 substitution, 2 insertion allowed
 
 Misspell file has "Mistakes" class which can be used to get all possible error that can happen when writing a word.
-Possible reasons of mistakes are 3.These are **deletion, substitution, insertion.**
+Possible reasons of mistakes are 3. These are **deletion, substitution, insertion.**
 
 This class gives wrong spelled word list by making following assumption:
 - The limit of substitution and insertion of letters is 2. If more then 2 substitution in one call is made,  class will give "Limit Crossed" error.
