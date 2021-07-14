@@ -306,18 +306,11 @@ Possible mistakes as we previously said through --
 
 
 
-# a = Mistakes("bat", n_del=1, n_sub=1, n_ins=1)
+a = Mistakes("bat", n_del=1, n_sub=1, n_ins=0)
 
-# print(a.error())
-# print(len(a.error()))
-# print(a.deletion())
-# print(a.substitution())
-# print(a.sub_ins())
-# print(a.del_sub())
-# print(a.del_ins())
-# print(a.insertion())
-# print(Mistakes.two_letter)
+print(a.error())
+print(len(a.error()))
 
+# OUTPUT : ['bw', 'jb', 'ib', 'ak', 'bo', 'bs', 'ba', 'tm', 'zt', 'bz', 'tc', 'tl', 'mb', 'ga', 'bm', 'th', 'bb', 'lt', 'as', 'db', 'bq', 'tz', 'am', 'tg', 'te', 'al', 'ai', 'gt', 'bl', 'bu', 'bg', 'qb', 'ka', 'hb', 'dt', 'rb', 'ab', 'ae', 'ht', 'yt', 'za', 'at', 'ta', 'tk', 'ah', 'bc', 'qa', 'bv', 'tw', 'yb', 'ap', 'bd', 'xa', 'aw', 'nt', 'cb', 'xt', 'mt', 'tb', 'td', 'tp', 'oa', 'fa', 'kb', 'et', 'aq', 'ty', 'pa', 'va', 'bt', 'tt', 'bn', 'tn', 'jt', 'vb', 'ra', 'na', 'wt', 'az', 'tr', 'fb', 'ca', 'ts', 'it', 'tv', 'aa', 'zb', 'vt', 'ha', 'qt', 'ut', 'tq', 'xb', 'ct', 'ot', 'bi', 'aj', 'by', 'wb', 'ac', 'pb', 'ay', 'bp', 'ax', 'ft', 'ao', 'ti', 'be', 'bh', 'ea', 'tx', 'af', 'gb', 'br', 'an', 'wa', 'da', 'st', 'ad', 'tj', 'pt', 'tf', 'ya', 'rt', 'bk', 'bj', 'ub', 'lb', 'bx', 'bf', 'tu', 'sa', 'to', 'ar', 'au', 'sb', 'ma', 'eb', 'nb', 'av', 'ua', 'la', 'ia', 'ag', 'ja', 'kt', 'ob']
 
-
-help(Mistakes)
+# len: 147
