@@ -1,4 +1,4 @@
-from itertools import permutations
+from itertools import combinations, permutations
 import string
 
 class Mistakes:
@@ -116,13 +116,13 @@ Possible mistakes as we previously said through --
         """   mistakes by deletions   """
         # 1 deletion, 0 substitution, 0 insertion
         if self.n_del == 1:
-            mistakes1 = permutations(self.word, self.nLetters-1)
+            mistakes1 = combinations(self.word, self.nLetters-1)
             mD1 = ["".join(i) for i in mistakes1]
             return Mistakes.cleaner(self.word, mD1)
 
         # 2 deletion , 0 substitution, 0 insertion
         elif self.n_del == 2:
-            mistakes2 = permutations(self.word, self.nLetters-2)
+            mistakes2 = combinations(self.word, self.nLetters-2)
             mD2 = ["".join(i) for i in mistakes2]
             return Mistakes.cleaner(self.word, mD2)
 
