@@ -28,23 +28,22 @@ Insertion
 
 
 ## How to use misspell.py
-- instantiate with any variable and give values to parameter
-- call method "error" to the instance of the class and store the value to print.
+- run misspell.py and fill the inputs
 
 Follwing is the example if word is **"*bat*"** and allowed values to class parameters are ***n_del=1, n_sub=0, n_ins=0***:
 
 ```
-word = Mistakes("bat", n_del=1, n_sub=0, n_ins=0)
-error_word = word.error()
+Give a word with alphabets only:  bat
+Give a whole number for number of deletion:  1
+Give a whole number for number of substitution:  0
+Give a whole number for number of insertion:  0
 
-# printing the misspelled words
-print(error_word)
 
-# number of misspelled words
-print(len(error_word))
+
+ 'Y' , if you want count the of words or, 'N' for not:  n
 ```
 
 **Output**
-> ['ta', 'ab', 'tb', 'at', 'ba', 'bt']
-  
-> 6
+: Listing misspell words from word: 'bat'; number_of_deletion: '1'; number_of_substitution: '0'; number_of_insertion: '0' 
+
+> ['ba', 'at', 'bt'];  Number of words: 3
