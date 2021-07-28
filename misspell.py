@@ -1,4 +1,4 @@
-from itertools import combinations, permutations
+from itertools import combinations, product
 import string
 
 class Mistakes:
@@ -32,52 +32,18 @@ Possible mistakes as we previously said through --
      # alphabet letters
     alpha = string.ascii_lowercase
 
-    # letters choosen one at a time
-    perm_1 = permutations(alpha, 1)
-    one_letter = ["".join(i) for i in perm_1]
-
-    # letters choosen two at a time
-    perm_2 = permutations(alpha, 2)
-    two_letter = ["".join(i) for i in perm_2]
-
-
-    def __init__(self, word, n_ins=0, n_del=0, n_sub=0):
+    def __init__(self, word, n_ins=0, n_del=0, n_sub=0, length = "N"):
 
         self.word = word.lower()
         self.n_ins = n_ins
         self.n_del = n_del
         self.n_sub = n_sub
-        self.alpha = string.ascii_lowercase
-        self.nLetters = len(word)
+        self.length = length.upper()
 
-    def error(self):
-
-        """ One stage for all solution """
-
-        if self.n_del == self.n_sub == self.n_ins == 0:
-            return "No error"
-
-        elif self.n_del in (1,2) and self.n_sub == 0 and self.n_ins == 0:
-            return Mistakes(self.word, n_del = self.n_del, n_sub = self.n_sub, n_ins = self.n_ins).deletion()
-
-        elif self.n_del == 0 and self.n_sub in (1,2) and self.n_ins == 0:
-            return Mistakes(self.word, n_del = self.n_del, n_sub = self.n_sub, n_ins = self.n_ins).substitution()
-
-        elif self.n_del == 0 and self.n_sub == 0 and self.n_ins in (1,2):
-            return Mistakes(self.word, n_del = self.n_del, n_sub = self.n_sub, n_ins = self.n_ins).insertion()
-
-        elif self.n_del in (1,2) and self.n_sub in (1,2) and self.n_ins == 0:
-            return Mistakes(self.word, n_del = self.n_del, n_sub = self.n_sub, n_ins = self.n_ins).del_sub()
-
-        elif self.n_del in (1,2) and self.n_sub == 0 and self.n_ins in (2,2):
-            return Mistakes(self.word, n_del = self.n_del, n_sub = self.n_sub, n_ins = self.n_ins).del_ins()
-
-        elif self.n_del == 0 and self.n_sub in (1,2) and self.n_ins in (1,2):
-            return Mistakes(self.word, n_del = self.n_del, n_sub = self.n_sub, n_ins = self.n_ins).sub_ins()
-
-        else:
-            return "Limit Crossed"
-
+    @staticmethod
+    def arsenal(num):
+        letters = ["".join(i) for i in product(Mistakes.alpha, repeat = num)]
+        return letters
 
 
     @staticmethod
@@ -89,15 +55,15 @@ Possible mistakes as we previously said through --
             pass
 
 
-
     @staticmethod
     def substitute(word, i, j, letters, continuous=True):
         """ returns word with letters substituted on a given index (i) """
         if continuous is True:
-            return word[0:i] + letters + word[i+j:]
+            new_word = word[0:i] + letters + word[i+j:]
+            if len(new_word) <= len(word):
+                return new_word
         else:
             pass
-
 
 
     @staticmethod
@@ -114,203 +80,112 @@ Possible mistakes as we previously said through --
 
     def deletion(self):
         """   mistakes by deletions   """
-        # 1 deletion, 0 substitution, 0 insertion
-        if self.n_del == 1:
-            mistakes1 = combinations(self.word, self.nLetters-1)
-            mD1 = ["".join(i) for i in mistakes1]
-            return Mistakes.cleaner(self.word, mD1)
 
-        # 2 deletion , 0 substitution, 0 insertion
-        elif self.n_del == 2:
-            mistakes2 = combinations(self.word, self.nLetters-2)
-            mD2 = ["".join(i) for i in mistakes2]
-            return Mistakes.cleaner(self.word, mD2)
+        mistakes = combinations(self.word, len(self.word)-self.n_del)
+        wrong_words = ["".join(i) for i in mistakes]
+
+        return Mistakes.cleaner(self.word, wrong_words)
 
 
 
     def substitution(self):
         """   mistakes through substitution   """
 
-        # 1 substitution, 0 insertion and 0 deletion
-        if self.n_sub == 1 and self.n_ins == 0:
-            sub_1 = list()
-            for i in range(len(self.word)):
-                sub_1 = sub_1  + ["".join(Mistakes.substitute(self.word, i, 1, letters, True)) for letters in Mistakes.one_letter]
-            return Mistakes.cleaner(self.word, sub_1)
+        arsenal = Mistakes.arsenal(num=self.n_sub)
+        wrong_words = list()
 
-        # 2 substitution, 0 insertion and 0 deletion
-        elif self.n_sub == 2 and self.n_ins == 0:
-            sub_2 = list()
-            for i in range(len(self.word)):
-                sub_2 = sub_2 + ["".join(Mistakes.substitute(self.word, i, 2, letters, True)) for letters in Mistakes.two_letter]
-            return Mistakes.cleaner(self.word, sub_2)
+        for i in range(len(self.word)):
+            wrong_words = wrong_words  + [Mistakes.substitute(self.word, i, self.n_sub, letters, True) for letters in arsenal]
 
+        return Mistakes.cleaner(self.word, wrong_words)
 
 
     def insertion(self):
         """   mistakes through insertion   """
 
-        # 1 insertion
-        if self.n_ins == 1:
-            ins_1 = list()
-            for i in range(len(self.word)):
-                ins_1 = ins_1 + ["".join(Mistakes.insert(self.word, i, letters, True)) for letters in Mistakes.one_letter]
-            return Mistakes.cleaner(self.word, ins_1)
+        arsenal= Mistakes.arsenal(num=self.n_ins)
+        wrong_words = list()
 
-        # 2 insertion
-        elif self.n_ins == 2:
-            ins_2 = list()
-            for i in range(len(self.word)):
-                ins_2 = ins_2 + ["".join(Mistakes.insert(self.word, i, letters, True)) for letters in Mistakes.two_letter]
-            return Mistakes.cleaner(self.word, ins_2)
+        for i in range(len(self.word)+1):
+            wrong_words = wrong_words + [Mistakes.insert(self.word, i, letters, True) for letters in arsenal]
+
+        return Mistakes.cleaner(self.word, wrong_words)
 
 
 
-    def sub_ins(self):
-        """   mistakes through both substitution and insertion   """
+    def error(self):
+        """   one stop for everything.  """
 
-        # 1 substitution and 1 insertion
-        if self.n_sub == 1 and self.n_ins == 1:
-            sub1_ins1 = list()
-            sub_1 = Mistakes(self.word, n_sub = self.n_sub).substitution()
-            for changed_word in sub_1:
-                for i in range(len(changed_word)):
-                    sub1_ins1 = sub1_ins1 + ["".join(Mistakes.insert(changed_word, i, letters, True)) for letters in Mistakes.one_letter]
-                # break
-            return Mistakes.cleaner(self.word, sub1_ins1)
+#         deletion
+        if self.n_del > 0:
+            del_words = Mistakes(self.word, n_del=self.n_del).deletion()
 
-        # 1 substitution and 2 insertion
-        if self.n_sub == 1 and self.n_ins == 2:
-            sub1_ins2 = list()
-            sub_1 = Mistakes(self.word, n_sub = self.n_sub).substitution()
-            for changed_word in sub_1:
-                for i in range(len(changed_word)):
-                    sub1_ins2 = sub1_ins2 + ["".join(Mistakes.insert(changed_word, i, letters, True)) for letters in Mistakes.two_letter]
-                # break
-            return Mistakes.cleaner(self.word, sub1_ins2)
+        else:
+            del_words = [self.word]
 
+#         substitution
+        if self.n_sub>0:
+            sub_words = list()
+            for changed_word in del_words:
+                if changed_word is not None:
+                    sub_words = sub_words + Mistakes(changed_word, n_sub = self.n_sub).substitution()
 
-        # 2 substitution and 1 insertion
-        if self.n_sub == 2 and self.n_ins == 1:
-            sub2_ins1 = list()
-            sub_2 = Mistakes(self.word, n_sub = self.n_sub).substitution()
-            for changed_word in sub_2:
-                for i in range(len(changed_word)):
-                    sub2_ins1 = sub2_ins1 + ["".join(Mistakes.insert(changed_word, i, letters, True)) for letters in Mistakes.one_letter]
-                # break
-            return Mistakes.cleaner(self.word, sub2_ins1)
+        else:
+            sub_words = del_words
 
-        # 2 substitution and 2 insertion
-        if self.n_sub == 2 and self.n_ins == 2:
-            sub2_ins2 = list()
-            sub_2 = Mistakes(self.word, n_sub = self.n_sub).substitution()
-            for changed_word in sub_2:
-                for i in range(len(changed_word)):
-                    sub2_ins2 = sub2_ins2 + ["".join(Mistakes.insert(changed_word, i, letters, True)) for letters in Mistakes.two_letter]
-                break
-            return Mistakes.cleaner(self.word, sub2_ins2)
+#         insertion
+        if self.n_ins > 0:
+            wrong_words = list()
+            for changed_word in sub_words:
+                if changed_word is not None:
+                    wrong_words = wrong_words + Mistakes(changed_word, n_ins=self.n_ins).insertion()
+
+        else:
+            wrong_words = sub_words
+
+        wrong_words = Mistakes.cleaner(self.word, wrong_words)
+
+        if self.length == "Y":
+            return f"{wrong_words}; Number of words: {len(wrong_words)}"
+        else:
+            return wrong_words
 
 
 
-    def del_sub(self):
-        """ mistakes through both deletion and substitution   """
+def main():
 
-        # 1 deletion and 1 substitution
-        if self.n_del == 1 and self.n_sub == 1:
-            del1_sub1 = list()
-            D1 = Mistakes(self.word, n_del=self.n_del).deletion()
+    """ taking inputs """
 
-            for changed_word in D1:
-                for i in range(len(changed_word)):
-                    del1_sub1 = del1_sub1 + ["".join(Mistakes.substitute(changed_word, i, 1, letters, True)) for letters in Mistakes.one_letter]
-            return Mistakes.cleaner(self.word, del1_sub1)
+    word = input("Give a word with alphabets only: ")
+    while word.isalpha() is False:
+        word = input("Give a word with alphabets only: ")
 
-        # 1 deletion and 2 substitution
-        if self.n_del == 1 and self.n_sub ==2:
-            del1_sub2 = list()
-            D1 = Mistakes(self.word, n_del=self.n_del).deletion()
+    dell = input("Give a whole number for number of deletion: ")
+    while (dell).isnumeric() is False:
+        dell = input("Give a whole number for number of deletion: ")
 
-            for changed_word in D1:
-                for i in range(len(changed_word)):
-                    del1_sub2 = del1_sub2 + ["".join(Mistakes.substitute(changed_word, i, 2, letters, True)) for letters in Mistakes.two_letter]
-            return Mistakes.cleaner(self.word, del1_sub2)
+    sub = input("Give a whole number for number of substitution: ")
+    while (sub).isnumeric() is False:
+        sub = input("Give a whole number for number of substitution: ")
 
+    ins = input("Give a whole number for number of insertion: ")
+    while (ins).isnumeric() is False:
+        ins = input("Give a whole number for number of insertion: ")
+    print("\n")
 
-        # 2 deletion and 1 substitution
-        if self.n_del == 2 and self.n_sub == 1:
-            del2_sub1 = list()
-            D2 = Mistakes(self.word, n_del=self.n_del).deletion()
+    len_words = input(" 'Y' , if you want count the of words or, 'N' for not: ")
+    while len_words not in ("Y", "y", "N", "n"):
+        len_words = input(" 'Y' , if you want the count of words or, 'N' for not: ")
 
-            for changed_word in D2:
-                for i in range(len(changed_word)):
-                    del2_sub1 = del2_sub1 + ["".join(Mistakes.substitute(changed_word, i, 1, letters, True)) for letters in Mistakes.one_letter]
-            return Mistakes.cleaner(self.word, del2_sub1)
+    print("\n")
 
-        # 2 deletion and 2 substitution
-        if self.n_del == 2 and self.n_sub ==2:
-            del2_sub2 = list()
-            D2 = Mistakes(self.word, n_del=self.n_del).deletion()
+    print(f"Listing misspell words from word: '{word}'; number_of_deletion: '{dell}'; number_of_substitution: '{sub}'; \
+number_of_insertion: '{ins}'", "\n","\n")
 
-            for changed_word in D2:
-                for i in range(len(changed_word)):
-                    del2_sub2 = del2_sub2 + ["".join(Mistakes.substitute(changed_word, i, 2, letters, True)) for letters in Mistakes.two_letter]
-            return Mistakes.cleaner(self.word, del2_sub2)
+    error_words = Mistakes(word=word, n_del=int(dell), n_sub=int(sub), n_ins=int(ins), length = len_words).error()
+    print(error_words)
+
+if __name__ == "__main__":
+    main()
 
 
-
-    def del_ins(self):
-        """   mistakes through both deletion and insertion   """
-
-        # 1 deletion and 1 insertion
-        if self.n_del == 1 and self.n_ins == 1:
-            del1_ins1 = list()
-            D1 = Mistakes(self.word, n_del=self.n_del).deletion()
-
-            for changed_word in D1:
-                for i in range(len(changed_word)):
-                    del1_ins1 = del1_ins1 + ["".join(Mistakes.insert(changed_word, i, letters, True)) for letters in Mistakes.one_letter]
-            return Mistakes.cleaner(self.word, del1_ins1)
-
-        # 1 deletion and 2 insertion
-        if self.n_del == 1 and self.n_ins ==2:
-            del1_ins2 = list()
-            D1 = Mistakes(self.word, n_del=self.n_del).deletion()
-
-            for changed_word in D1:
-                for i in range(len(changed_word)):
-                    del1_ins2 = del1_ins2 + ["".join(Mistakes.insert(changed_word, i, letters, True)) for letters in Mistakes.two_letter]
-            return Mistakes.cleaner(self.word, del1_ins2)
-
-
-        # 2 deletion and 1 insertion
-        if self.n_del == 2 and self.n_ins == 1:
-            del2_ins1 = list()
-            D2 = Mistakes(self.word, n_del=self.n_del).deletion()
-
-            for changed_word in D2:
-                for i in range(len(changed_word)):
-                    del2_ins1 = del2_ins1 + ["".join(Mistakes.insert(changed_word, i, letters, True)) for letters in Mistakes.one_letter]
-            return Mistakes.cleaner(self.word, del2_ins1)
-
-        # 2 deletion and 2 insertion
-        if self.n_del == 2 and self.n_ins ==2:
-            del2_ins2 = list()
-            D2 = Mistakes(self.word, n_del=self.n_del).deletion()
-
-            for changed_word in D2:
-                for i in range(len(changed_word)):
-                    del2_ins2 = del2_ins2 + ["".join(Mistakes.insert(changed_word, i, letters, True)) for letters in Mistakes.two_letter]
-            return Mistakes.cleaner(self.word, del2_ins2)
-
-
-
-
-
-a = Mistakes("bat", n_del=1, n_sub=1, n_ins=0)
-
-print(a.error())
-print(len(a.error()))
-
-# OUTPUT : ['bw', 'jb', 'ib', 'ak', 'bo', 'bs', 'ba', 'tm', 'zt', 'bz', 'tc', 'tl', 'mb', 'ga', 'bm', 'th', 'bb', 'lt', 'as', 'db', 'bq', 'tz', 'am', 'tg', 'te', 'al', 'ai', 'gt', 'bl', 'bu', 'bg', 'qb', 'ka', 'hb', 'dt', 'rb', 'ab', 'ae', 'ht', 'yt', 'za', 'at', 'ta', 'tk', 'ah', 'bc', 'qa', 'bv', 'tw', 'yb', 'ap', 'bd', 'xa', 'aw', 'nt', 'cb', 'xt', 'mt', 'tb', 'td', 'tp', 'oa', 'fa', 'kb', 'et', 'aq', 'ty', 'pa', 'va', 'bt', 'tt', 'bn', 'tn', 'jt', 'vb', 'ra', 'na', 'wt', 'az', 'tr', 'fb', 'ca', 'ts', 'it', 'tv', 'aa', 'zb', 'vt', 'ha', 'qt', 'ut', 'tq', 'xb', 'ct', 'ot', 'bi', 'aj', 'by', 'wb', 'ac', 'pb', 'ay', 'bp', 'ax', 'ft', 'ao', 'ti', 'be', 'bh', 'ea', 'tx', 'af', 'gb', 'br', 'an', 'wa', 'da', 'st', 'ad', 'tj', 'pt', 'tf', 'ya', 'rt', 'bk', 'bj', 'ub', 'lb', 'bx', 'bf', 'tu', 'sa', 'to', 'ar', 'au', 'sb', 'ma', 'eb', 'nb', 'av', 'ua', 'la', 'ia', 'ag', 'ja', 'kt', 'ob']
-
-# len: 147
